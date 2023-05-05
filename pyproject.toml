@@ -25,7 +25,7 @@ dev = [
 ]
 
 [project.scripts]
-PACKAGE = "nalax.__main__:main"
+nalax = "nalax.__main__:main"
 
 [project.urls]
 Home = "https://github.com/amyreese/nalax"
