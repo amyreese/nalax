@@ -1,18 +1,18 @@
-# PROJECT_NAME
+# nalax
 
-PROJECT_DESCRIPTION
+nginx analytics
 
-[![version](https://img.shields.io/pypi/v/PACKAGE_NAME.svg)](https://pypi.org/project/PACKAGE_NAME)
-[![license](https://img.shields.io/pypi/l/PACKAGE_NAME.svg)](https://github.com/GITHUB_USERNAME/PACKAGE_NAME/blob/main/LICENSE)
+[![version](https://img.shields.io/pypi/v/nalax.svg)](https://pypi.org/project/nalax)
+[![license](https://img.shields.io/pypi/l/nalax.svg)](https://github.com/amyreese/nalax/blob/main/LICENSE)
 
 Install
 -------
 
 ```shell-session
-$ pip install PACKAGE_NAME
+$ pip install nalax
 ```
 
 License
 -------
 
-PROJECT_NAME is copyright AUTHOR_NAME, and licensed under the MIT license.
+nalax is copyright Amethyst Reese, and licensed under the MIT license.

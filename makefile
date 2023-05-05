@@ -9,15 +9,15 @@ install:
 venv: .venv
 
 test:
-	python -m unittest -v PACKAGE_NAME
-	python -m mypy -m PACKAGE_NAME
+	python -m unittest -v nalax
+	python -m mypy -m nalax
 
 lint:
-	python -m flake8 PACKAGE_NAME
-	python -m ufmt check PACKAGE_NAME
+	python -m flake8 nalax
+	python -m ufmt check nalax
 
 format:
-	python -m ufmt format PACKAGE_NAME
+	python -m ufmt format nalax
 
 release: lint test clean
 	flit publish
@@ -27,6 +27,3 @@ clean:
 
 distclean: clean
 	rm -rf .venv
-
-init:
-	@python init.py
