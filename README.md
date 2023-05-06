@@ -12,6 +12,28 @@ Install
 $ pip install nalax
 ```
 
+Nginx Logging
+-------------
+
+Enabling logging in nalax format:
+
+```
+http {
+    log_format nalax escape=json '{'
+        '"time": "$time_iso8601", '
+        '"host": "$http_host", '
+        '"method": "$request_method", '
+        '"uri": "$request_uri", '
+        '"status": "$status", '
+        '"referrer": "$http_referrer", '
+        '"remote": "$remote_addr", '
+        '"agent": "$http_user_agent"'
+        '}';
+
+    access_log /opt/homebrew/var/log/nginx/access.nalax.json nalax;
+}
+```
+
 License
 -------
 
