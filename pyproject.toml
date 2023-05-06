@@ -11,7 +11,10 @@ authors = [
 license = {file="LICENSE"}
 dynamic = ["version", "description"]
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "arrow",
+    "rich",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -20,8 +23,8 @@ dev = [
     "flake8==6.0.0",
     "flit==3.8.0",
     "mypy==1.0.1",
-    "ufmt==2.0.1",
-    "usort==1.0.5",
+    "ufmt==2.1.0",
+    "usort==1.0.6",
 ]
 
 [project.scripts]
