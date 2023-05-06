@@ -5,9 +5,9 @@ import json
 import logging
 import shlex
 import subprocess
+from ipaddress import ip_address
 from pathlib import Path
 from typing import Generator
-from ipaddress import ip_address
 from urllib.parse import urlparse
 
 import arrow
@@ -23,20 +23,22 @@ def convert(data: dict[str, str]) -> Event | None:
     try:
         timestamp = arrow.get(data["time"]).to("utc")
         uri = urlparse(data["uri"])
+        region = iplookup.lookup(ip_address(data["remote"]))
+
         event = Event(
-            timestamp=timestamp.datetime,
+            timestamp=timestamp,
             host=data["host"],
-            method=data["method"],
             path=uri.path,
+            method=data["method"],
             status=int(data["status"]),
             referrer=data["referrer"],
-            remote=ip_address(data["remote"]),
+            region=region,
             agent=data["agent"],
         )
         return event
 
-    except Exception:
-        LOG.warning("unrecognized data %r", data)
+    except Exception as exc:
+        LOG.exception("unrecognized data (%s) %r", exc, data)
         return None
 
 
@@ -67,6 +69,7 @@ def tail(path: Path) -> Generator[Event, bool | None, None]:
 
 if __name__ == "__main__":
     import sys
+
     path = Path(sys.argv[1])
     iplookup.load()
     for event in tail(path):

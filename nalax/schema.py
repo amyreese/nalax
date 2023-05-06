@@ -22,11 +22,55 @@ SCHEMA: dict[int, str] = {
     """,
     1: """
         create table if not exists `nalax_events` (
+            `timestamp` int,
             `host` text,
-            `timestamp` int
+            `path` text,
+            `method` text,
+            `status` int,
+            `referrer` text,
+            `region` text,
+            `agent` text
         )
-    """
+    """,
+    2: """
+        create index if not exists `idx_nalax_events_host_path`
+            on `nalax_events` (`host`, `path`);
+    """,
+    3: """
+        create table if not exists `nalax_daily_pages` (
+            `year` int,
+            `month` int,
+            `day` int,
+            `host` text,
+            `path` text,
+            `method` text,
+            `count` int
+        )
+    """,
+    4: """
+        create unique index `idx_unique_nalax_daily_pages`
+            on `nalax_daily_pages` (`year`, `month`, `day`, `host`, `path`, `method`)
+    """,
+    5: """
+        create table if not exists `nalax_daily_regions` (
+            `year` int,
+            `month` int,
+            `day` int,
+            `host` text,
+            `region` text,
+            `count` int
+        )
+    """,
+    6: """
+        create unique index `idx_unique_nalax_daily_regions`
+            on `nalax_daily_regions` (`year`, `month`, `day`, `host`, `region`)
+    """,
 }
 
+for key in SCHEMA:
+    assert isinstance(key, int), f"SCHEMA[{key!r}] is not an integer"
+    assert isinstance(SCHEMA[key], str), f"SCHEMA[{key}] is not a string value"
+
 for i in range(len(SCHEMA)):
-    assert i in SCHEMA
+    assert i in SCHEMA, f"SCHEMA[{i}] is missing"
+    assert SCHEMA[i].strip(), f"SCHEMA[{i}] is empty"

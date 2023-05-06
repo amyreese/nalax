@@ -1,14 +1,17 @@
 # Copyright Amethyst Reese
 # Licensed under the MIT license
 
-from pathlib import Path
-from typing import Generator, NamedTuple
 import pkgutil
-from io import StringIO
 from bisect import bisect
-from rich import print
+from functools import lru_cache
+from io import StringIO
 from ipaddress import ip_address
-from .types import IPAddress, IPv4Address, IPv6Address
+from typing import Generator, NamedTuple
+
+from rich import print
+
+from .types import IPAddress, IPv6Address
+
 
 class IPv4Range(NamedTuple):
     start: int
@@ -22,7 +25,11 @@ IP2COUNTRY_V4: list[IPv4Range] = []
 def load() -> None:
     global IP2COUNTRY_V4
 
-    data = pkgutil.get_data("nalax", "vendor/ip2asn/ip2country-v4-u32.tsv").decode("utf-8")
+    data = pkgutil.get_data(
+        "nalax",
+        "vendor/ip2asn/ip2country-v4-u32.tsv",
+    ).decode("utf-8")
+
     def ingest(content: StringIO) -> Generator[IPv4Range, None, None]:
         for line in content:
             values = line.strip().split()
@@ -33,18 +40,22 @@ def load() -> None:
                     yield IPv4Range(int(a), int(b), "None")
                 case _:
                     continue
-            
+
     IP2COUNTRY_V4 = sorted(ingest(StringIO(data)))
 
 
+@lru_cache(maxsize=1024)
 def lookup(ip: IPAddress) -> str:
     if isinstance(ip, IPv6Address):
         return "IPv6"
     else:
         ip32 = int(ip)
+        print(ip, ip32)
         idx = bisect(IP2COUNTRY_V4, (ip32,))
+        print(idx)
         if idx >= len(IP2COUNTRY_V4):
             idx -= 1
+        print(idx)
         ipr = IP2COUNTRY_V4[idx]
         if ip32 < ipr.start:
             ipr = IP2COUNTRY_V4[idx - 1]
@@ -52,8 +63,10 @@ def lookup(ip: IPAddress) -> str:
             return "BIG"
         return ipr.region
 
+
 if __name__ == "__main__":
     import sys
+
     addrs = sys.argv[1:]
 
     load()
