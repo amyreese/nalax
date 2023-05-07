@@ -86,7 +86,6 @@ def aggregate_daily_events(database: Path, before: arrow.Arrow) -> int:
             for event in events:
                 event: Event
                 event_count += 1
-                print(event)
                 t = event.timestamp
 
                 # daily pages
