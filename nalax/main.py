@@ -4,6 +4,7 @@
 import logging
 import sys
 from pathlib import Path
+from time import time_ns
 
 import arrow
 import click
@@ -55,11 +56,9 @@ def tail_logs(ctx: click.Context, log_path: Path, batch_size: int) -> None:
 
     batch: list[Event] = []
     for event in tail(log_path):
-        print(event)
         batch.append(event)
 
         if len(batch) >= batch_size:
-            print("inserting to db")
             db.insert_events(options.database, batch)
 
 
@@ -88,6 +87,9 @@ def aggregate(ctx: click.Context, before: str | None) -> None:
 @main.command("report")
 @click.pass_context
 def report(ctx: click.Context) -> None:
+    """
+    Generate reports
+    """
     options: Options = ctx.obj
     with db.connect(options.database) as conn:
         result = conn.execute(
@@ -98,6 +100,12 @@ def report(ctx: click.Context) -> None:
 
         result = conn.execute(
             "select * from nalax_daily_regions order by count desc limit 20"
+        )
+        for row in result.fetchall():
+            print(*row)
+
+        result = conn.execute(
+            "select * from nalax_daily_devices order by count desc limit 20"
         )
         for row in result.fetchall():
             print(*row)

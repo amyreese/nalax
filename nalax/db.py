@@ -52,11 +52,10 @@ def insert_events(database: Path, batch: list[Event]) -> None:
         query = """
             insert into `nalax_events` (
                 `timestamp`, `host`, `path`, `method`,
-                `status`, `referrer`, `region`, `device`,
-                `os`, `browser`
+                `status`, `region`, `device`, `os`, `browser`
             ) values
         """ + ", ".join(
-            ["(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"] * len(batch)
+            ["(?, ?, ?, ?, ?, ?, ?, ?, ?)"] * len(batch)
         )
         params = []
         for event in batch:

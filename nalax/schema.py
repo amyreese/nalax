@@ -27,7 +27,6 @@ SCHEMA: dict[int, str] = {
             `path` text,
             `method` text,
             `status` int,
-            `referrer` text,
             `region` text,
             `device` text,
             `os` text,

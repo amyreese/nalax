@@ -21,12 +21,12 @@ class AgentTest(TestCase):
             (
                 "chrome ipad",
                 "Mozilla/5.0 (iPad; CPU OS 16_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/113.0.5672.69 Mobile/15E148 Safari/604.1",
-                Agent("ipad", "ios", "chrome"),
+                Agent("mobile", "ios", "chrome"),
             ),
             (
                 "chrome iphone",
                 "Mozilla/5.0 (iPhone; CPU iPhone OS 16_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/113.0.5672.69 Mobile/15E148 Safari/604.1",
-                Agent("iphone", "ios", "chrome"),
+                Agent("mobile", "ios", "chrome"),
             ),
             (
                 "chrome desktop linux",
@@ -52,7 +52,7 @@ class AgentTest(TestCase):
             (
                 "iphone edge",
                 "Mozilla/5.0 (iPhone; CPU iPhone OS 16_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 EdgiOS/112.1722.64 Mobile/15E148 Safari/605.1.15",
-                Agent("iphone", "ios", "edge"),
+                Agent("mobile", "ios", "edge"),
             ),
             (
                 "edge desktop macos",
@@ -73,12 +73,12 @@ class AgentTest(TestCase):
             (
                 "firefox ipad",
                 "Mozilla/5.0 (iPad; CPU OS 13_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/112.0 Mobile/15E148 Safari/605.1.15",
-                Agent("ipad", "ios", "firefox"),
+                Agent("mobile", "ios", "firefox"),
             ),
             (
                 "firefox iphone",
                 "Mozilla/5.0 (iPhone; CPU iPhone OS 13_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/112.0 Mobile/15E148 Safari/605.1.15",
-                Agent("iphone", "ios", "firefox"),
+                Agent("mobile", "ios", "firefox"),
             ),
             (
                 "firefox desktop linux",
@@ -99,12 +99,12 @@ class AgentTest(TestCase):
             (
                 "safari ipad",
                 "Mozilla/5.0 (iPad; CPU OS 16_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Mobile/15E148 Safari/604.1",
-                Agent("ipad", "ios", "safari"),
+                Agent("mobile", "ios", "safari"),
             ),
             (
                 "safari iphone",
                 "Mozilla/5.0 (iPhone; CPU iPhone OS 16_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Mobile/15E148 Safari/604.1",
-                Agent("iphone", "ios", "safari"),
+                Agent("mobile", "ios", "safari"),
             ),
             (
                 "safari desktop macos",

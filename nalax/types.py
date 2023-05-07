@@ -28,7 +28,6 @@ class EventRow(NamedTuple):
     path: str
     method: str
     status: int
-    referrer: str
     region: str
     device: str
     os: str
@@ -42,7 +41,6 @@ class Event:
     path: str
     method: str
     status: int
-    referrer: str
     region: str
     agent: Agent
 
@@ -54,9 +52,8 @@ class Event:
             path=row[2],
             method=row[3],
             status=row[4],
-            referrer=row[5],
-            region=row[6],
-            agent=Agent(row[7], row[8], row[9]),
+            region=row[5],
+            agent=Agent(row[6], row[7], row[8]),
         )
 
     def as_row(self) -> EventRow:
@@ -66,7 +63,6 @@ class Event:
             path=self.path,
             method=self.method,
             status=self.status,
-            referrer=self.referrer,
             region=self.region,
             device=self.agent.device,
             os=self.agent.os,

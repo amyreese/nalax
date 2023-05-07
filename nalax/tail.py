@@ -33,14 +33,13 @@ def convert(data: dict[str, str]) -> Event | None:
             path=uri.path,
             method=data["method"],
             status=int(data["status"]),
-            referrer=data["referrer"],
             region=region,
             agent=agent,
         )
         return event
 
     except Exception as exc:
-        LOG.exception("unrecognized data (%s) %r", exc, data)
+        LOG.warning("unrecognized data contents: %s", type(exc))
         return None
 
 
@@ -53,7 +52,7 @@ def tail(path: Path) -> Generator[Event, bool | None, None]:
             try:
                 data = json.loads(line)
             except ValueError:
-                LOG.warning("failed to parse line %r", line)
+                LOG.warning("failed to parse line, check logging format")
 
             event = convert(data)
             if event is None:

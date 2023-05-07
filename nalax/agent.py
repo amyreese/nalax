@@ -19,11 +19,8 @@ def user_agent(agent: str) -> Agent:
         if "android" in system:
             device = "mobile"
             os = "android"
-        elif "ipad" in system:
-            device = "ipad"
-            os = "ios"
-        elif "iphone" in system:
-            device = "iphone"
+        elif "ipad" in system or "iphone" in system:
+            device = "mobile"
             os = "ios"
         elif "mac os" in system:
             device = "desktop"
