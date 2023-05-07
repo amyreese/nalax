@@ -18,17 +18,23 @@ from .types import Event, Options
 @click.group()
 @click.pass_context
 @click.version_option(__version__, "--version", "-V")
+@click.option("--verbose / --quiet", "-v / -q", default=None)
 @click.option(
     "--database",
     "-d",
     type=click.Path(dir_okay=False, writable=True, resolve_path=True, path_type=Path),
     default=Path("nalax.db"),
 )
-def main(ctx: click.Context, database: Path) -> None:
+def main(ctx: click.Context, database: Path, verbose: bool | None) -> None:
     options = Options(
         database=database,
     )
-    logging.basicConfig(level=logging.WARNING, stream=sys.stderr)
+    level = (
+        logging.DEBUG
+        if verbose
+        else (logging.WARNING if verbose is None else logging.ERROR)
+    )
+    logging.basicConfig(level=level, stream=sys.stderr)
     db.update_schema(options.database)
     iplookup.load()
     ctx.obj = options

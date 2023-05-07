@@ -2,6 +2,9 @@
 # Licensed under the MIT license
 
 import re
+import sys
+
+from rich import print
 
 from .types import Agent
 
@@ -52,5 +55,14 @@ def user_agent(agent: str) -> Agent:
 
         return Agent(device, os, browser)
 
+    elif "safari/" in agent:
+        return Agent("other", "other", "safari")
+
     else:
         return Agent("unknown", "unknown", "unknown")
+
+
+if __name__ == "__main__":
+    for s in sys.argv[1:]:
+        print(s)
+        print(user_agent(s))

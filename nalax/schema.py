@@ -29,7 +29,9 @@ SCHEMA: dict[int, str] = {
             `status` int,
             `referrer` text,
             `region` text,
-            `agent` text
+            `device` text,
+            `os` text,
+            `browser` text
         )
     """,
     2: """
@@ -64,6 +66,25 @@ SCHEMA: dict[int, str] = {
     6: """
         create unique index `idx_unique_nalax_daily_regions`
             on `nalax_daily_regions` (`year`, `month`, `day`, `host`, `region`)
+    """,
+    7: """
+        create table if not exists `nalax_daily_devices` (
+            `year` int,
+            `month` int,
+            `day` int,
+            `host` text,
+            `device` text,
+            `os` text,
+            `browser` text,
+            `count` int
+        )
+    """,
+    8: """
+        create unique index `idx_unique_nalax_daily_devices`
+            on `nalax_daily_devices` (
+                `year`, `month`, `day`, `host`,
+                `device`, `os`, `browser`
+            )
     """,
 }
 

@@ -14,6 +14,7 @@ import arrow
 from rich import print
 
 from . import iplookup
+from .agent import user_agent
 from .types import Event
 
 LOG = logging.getLogger(__name__)
@@ -24,6 +25,7 @@ def convert(data: dict[str, str]) -> Event | None:
         timestamp = arrow.get(data["time"]).to("utc")
         uri = urlparse(data["uri"])
         region = iplookup.lookup(ip_address(data["remote"]))
+        agent = user_agent(data["agent"])
 
         event = Event(
             timestamp=timestamp,
@@ -33,7 +35,7 @@ def convert(data: dict[str, str]) -> Event | None:
             status=int(data["status"]),
             referrer=data["referrer"],
             region=region,
-            agent=data["agent"],
+            agent=agent,
         )
         return event
 

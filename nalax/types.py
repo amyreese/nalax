@@ -16,6 +16,12 @@ class Options:
     database: Path
 
 
+class Agent(NamedTuple):
+    device: str
+    os: str
+    browser: str
+
+
 class EventRow(NamedTuple):
     timestamp: int
     host: str
@@ -24,7 +30,9 @@ class EventRow(NamedTuple):
     status: int
     referrer: str
     region: str
-    agent: str
+    device: str
+    os: str
+    browser: str
 
 
 @dataclass
@@ -36,7 +44,7 @@ class Event:
     status: int
     referrer: str
     region: str
-    agent: str
+    agent: Agent
 
     @classmethod
     def row_factory(cls, cursor, row) -> "Event":
@@ -48,7 +56,7 @@ class Event:
             status=row[4],
             referrer=row[5],
             region=row[6],
-            agent=row[7],
+            agent=Agent(row[7], row[8], row[9]),
         )
 
     def as_row(self) -> EventRow:
@@ -60,5 +68,7 @@ class Event:
             status=self.status,
             referrer=self.referrer,
             region=self.region,
-            agent=self.agent,
+            device=self.agent.device,
+            os=self.agent.os,
+            browser=self.agent.browser,
         )

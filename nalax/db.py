@@ -52,10 +52,11 @@ def insert_events(database: Path, batch: list[Event]) -> None:
         query = """
             insert into `nalax_events` (
                 `timestamp`, `host`, `path`, `method`,
-                `status`, `referrer`, `region`, `agent`
+                `status`, `referrer`, `region`, `device`,
+                `os`, `browser`
             ) values
         """ + ", ".join(
-            ["(?, ?, ?, ?, ?, ?, ?, ?)"] * len(batch)
+            ["(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"] * len(batch)
         )
         params = []
         for event in batch:
@@ -70,6 +71,7 @@ def aggregate_daily_events(database: Path, before: arrow.Arrow) -> int:
 
     daily_pages: dict[tuple, int] = defaultdict(int)
     daily_regions: dict[tuple, int] = defaultdict(int)
+    daily_devices: dict[tuple, int] = defaultdict(int)
 
     with connect(database) as conn:
         cursor = conn.cursor()
@@ -97,8 +99,21 @@ def aggregate_daily_events(database: Path, before: arrow.Arrow) -> int:
                 bucket = (t.year, t.month, t.day, event.host, event.region)
                 daily_regions[bucket] += 1
 
+                # daily devices
+                bucket = (
+                    t.year,
+                    t.month,
+                    t.day,
+                    event.host,
+                    event.agent.device,
+                    event.agent.os,
+                    event.agent.browser,
+                )
+                daily_devices[bucket] += 1
+
         print("daily_pages:", daily_pages)
         print("daily_regions:", daily_regions)
+        print("daily_devices:", daily_devices)
 
         # daily pages
         query = """
@@ -122,6 +137,26 @@ def aggregate_daily_events(database: Path, before: arrow.Arrow) -> int:
         """
         for (year, month, day, host, region), count in daily_regions.items():
             params = (year, month, day, host, region, count)
+            cursor.execute(query, params)
+
+        # daily devices
+        query = """
+            insert into `nalax_daily_devices`
+                (`year`, `month`, `day`, `host`, `device`, `os`, `browser`, `count`)
+                values (?, ?, ?, ?, ?, ?, ?, ?)
+                on conflict(`year`, `month`, `day`, `host`, `device`, `os`, `browser`)
+                    do update set `count` = `count` + excluded.count
+        """
+        for (
+            year,
+            month,
+            day,
+            host,
+            device,
+            dos,
+            browser,
+        ), count in daily_devices.items():
+            params = (year, month, day, host, device, dos, browser, count)
             cursor.execute(query, params)
 
         # remove aggregated events

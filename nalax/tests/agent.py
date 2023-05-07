@@ -12,7 +12,6 @@ class AgentTest(TestCase):
         # https://www.whatismybrowser.com/guides/the-latest-user-agent/
         for name, value, expected in (
             ("empty", "", Agent("unknown", "unknown", "unknown")),
-            
             # chrome
             (
                 "chrome android",
@@ -44,7 +43,6 @@ class AgentTest(TestCase):
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
                 Agent("desktop", "windows", "chrome"),
             ),
-
             # edge
             (
                 "android edge",
@@ -66,7 +64,6 @@ class AgentTest(TestCase):
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/112.0.1722.71",
                 Agent("desktop", "windows", "edge"),
             ),
-
             # firefox
             (
                 "firefox android",
@@ -98,7 +95,6 @@ class AgentTest(TestCase):
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109) Gecko/20100101 Firefox/112.0",
                 Agent("desktop", "windows", "firefox"),
             ),
-
             # safari
             (
                 "safari ipad",
@@ -115,7 +111,11 @@ class AgentTest(TestCase):
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_3_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Safari/605.1.15",
                 Agent("desktop", "macos", "safari"),
             ),
-
+            (
+                "safari weird",
+                "MobileSafari/8615.1.26.10.24 CFNetwork/1406.0.4 Darwin/22.4.0",
+                Agent("other", "other", "safari"),
+            ),
             # brave
             (
                 "brave android",
@@ -137,7 +137,6 @@ class AgentTest(TestCase):
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.4472.124 Safari/537.3 brave/5035",
                 Agent("desktop", "windows", "brave"),
             ),
-
             # lol
             (
                 "ie9",
@@ -154,7 +153,6 @@ class AgentTest(TestCase):
                 "Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko",
                 Agent("desktop", "windows", "ie"),
             ),
-
         ):
             with self.subTest(name):
                 result = user_agent(value)
