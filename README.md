@@ -19,6 +19,7 @@ Nalax aggregates the following data, and nothing more:
   - form factor (mobile or desktop)
   - OS brand (Android, iOS, Linux, macOS, or Windows)
   - browser brand (Chrome, Edge, Firefox, Safari)
+  - connection type (IPv4 or IPv6)
 
 Any personally identifiable information (including IP address, OS or browser
 version, and user agent string) is immediately categorized, discarded, and

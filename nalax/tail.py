@@ -5,7 +5,6 @@ import json
 import logging
 import shlex
 import subprocess
-from ipaddress import ip_address
 from pathlib import Path
 from typing import Generator
 from urllib.parse import urlparse
@@ -24,7 +23,7 @@ def convert(data: dict[str, str]) -> Event | None:
     try:
         timestamp = arrow.get(data["time"]).to("utc")
         uri = urlparse(data["uri"])
-        region = iplookup.lookup(ip_address(data["remote"]))
+        region, network = iplookup.lookup(data["remote"])
         agent = user_agent(data["agent"])
 
         event = Event(
@@ -34,6 +33,7 @@ def convert(data: dict[str, str]) -> Event | None:
             method=data["method"],
             status=int(data["status"]),
             region=region,
+            network=network,
             agent=agent,
         )
         return event

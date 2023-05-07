@@ -2,13 +2,10 @@
 # Licensed under the MIT license
 
 from dataclasses import dataclass
-from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path
-from typing import NamedTuple, TypeAlias, Union
+from typing import NamedTuple
 
 import arrow
-
-IPAddress: TypeAlias = Union[IPv4Address, IPv6Address]
 
 
 @dataclass
@@ -29,6 +26,7 @@ class EventRow(NamedTuple):
     method: str
     status: int
     region: str
+    network: str
     device: str
     os: str
     browser: str
@@ -42,6 +40,7 @@ class Event:
     method: str
     status: int
     region: str
+    network: str
     agent: Agent
 
     @classmethod
@@ -53,7 +52,8 @@ class Event:
             method=row[3],
             status=row[4],
             region=row[5],
-            agent=Agent(row[6], row[7], row[8]),
+            network=row[6],
+            agent=Agent(row[7], row[8], row[9]),
         )
 
     def as_row(self) -> EventRow:
@@ -64,6 +64,7 @@ class Event:
             method=self.method,
             status=self.status,
             region=self.region,
+            network=self.network,
             device=self.agent.device,
             os=self.agent.os,
             browser=self.agent.browser,

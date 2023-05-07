@@ -15,6 +15,8 @@ from .__version__ import __version__
 from .tail import tail
 from .types import Event, Options
 
+LOG = logging.getLogger(__name__)
+
 
 @click.group()
 @click.pass_context
@@ -43,23 +45,57 @@ def main(ctx: click.Context, database: Path, verbose: bool | None) -> None:
 
 @main.command("tail")
 @click.pass_context
-@click.option("--batch-size", "-b", type=int, default=1)
+@click.option(
+    "--buffer-size",
+    "-b",
+    type=int,
+    default=0,
+    help="number of events to gather before flushing batch",
+)
+@click.option(
+    "--buffer-time",
+    "-t",
+    type=int,
+    default=0,
+    help="nanoseconds to wait before flushing batch",
+)
 @click.argument(
     "log-path",
     type=click.Path(exists=True, dir_okay=False, resolve_path=True, path_type=Path),
 )
-def tail_logs(ctx: click.Context, log_path: Path, batch_size: int) -> None:
+def tail_logs(
+    ctx: click.Context, log_path: Path, buffer_size: int, buffer_time: int
+) -> None:
     """
     Tail access logs and add to database
     """
     options: Options = ctx.obj
 
     batch: list[Event] = []
-    for event in tail(log_path):
-        batch.append(event)
 
-        if len(batch) >= batch_size:
-            db.insert_events(options.database, batch)
+    def buffered() -> None:
+        target = time_ns() + buffer_time
+        for event in tail(log_path):
+            now = time_ns()
+            if now > target and not batch:
+                target = now + buffer_time
+
+            batch.append(event)
+
+            if len(batch) >= buffer_size or now > target:
+                db.insert_events(options.database, batch)
+                LOG.info("recorded %d events", len(batch))
+                batch.clear()
+                target = now + buffer_time
+
+    if buffer_size or buffer_time:
+        return buffered()
+
+    else:
+        for event in tail(log_path):
+            db.insert_events(options.database, [event])
+            sys.stdout.write(".")
+            sys.stdout.flush()
 
 
 @main.command("aggregate")

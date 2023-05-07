@@ -28,6 +28,7 @@ SCHEMA: dict[int, str] = {
             `method` text,
             `status` int,
             `region` text,
+            `network` text,
             `device` text,
             `os` text,
             `browser` text
@@ -53,36 +54,24 @@ SCHEMA: dict[int, str] = {
             on `nalax_daily_pages` (`year`, `month`, `day`, `host`, `path`, `method`)
     """,
     5: """
-        create table if not exists `nalax_daily_regions` (
+        create table if not exists `nalax_daily_users` (
             `year` int,
             `month` int,
             `day` int,
             `host` text,
             `region` text,
-            `count` int
-        )
-    """,
-    6: """
-        create unique index `idx_unique_nalax_daily_regions`
-            on `nalax_daily_regions` (`year`, `month`, `day`, `host`, `region`)
-    """,
-    7: """
-        create table if not exists `nalax_daily_devices` (
-            `year` int,
-            `month` int,
-            `day` int,
-            `host` text,
+            `network` text,
             `device` text,
             `os` text,
             `browser` text,
             `count` int
         )
     """,
-    8: """
-        create unique index `idx_unique_nalax_daily_devices`
-            on `nalax_daily_devices` (
-                `year`, `month`, `day`, `host`,
-                `device`, `os`, `browser`
+    6: """
+        create unique index `idx_unique_nalax_daily_users`
+            on `nalax_daily_users` (
+                `year`, `month`, `day`, `host`, `region`,
+                `network`, `device`, `os`, `browser`
             )
     """,
 }

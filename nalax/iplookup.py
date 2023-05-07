@@ -5,12 +5,10 @@ import pkgutil
 from bisect import bisect
 from functools import lru_cache
 from io import StringIO
-from ipaddress import ip_address
+from ipaddress import ip_address, IPv6Address
 from typing import Generator, NamedTuple
 
 from rich import print
-
-from .types import IPAddress, IPv6Address
 
 
 class IPv4Range(NamedTuple):
@@ -45,23 +43,24 @@ def load() -> None:
 
 
 @lru_cache(maxsize=1024)
-def lookup(ip: IPAddress) -> str:
+def lookup(ips: str) -> tuple[str, str]:
+    try:
+        ip = ip_address(ips)
+    except ValueError:
+        return "None", "none"
     if isinstance(ip, IPv6Address):
-        return "IPv6"
+        return "None", "ipv6"
     else:
         ip32 = int(ip)
-        print(ip, ip32)
         idx = bisect(IP2COUNTRY_V4, (ip32,))
-        print(idx)
         if idx >= len(IP2COUNTRY_V4):
             idx -= 1
-        print(idx)
         ipr = IP2COUNTRY_V4[idx]
         if ip32 < ipr.start:
             ipr = IP2COUNTRY_V4[idx - 1]
         if ip32 > ipr.end:
-            return "BIG"
-        return ipr.region
+            return "Unknown"
+        return ipr.region, "ipv4"
 
 
 if __name__ == "__main__":
@@ -76,6 +75,5 @@ if __name__ == "__main__":
         "127.0.0.1",
         "::",
     ):
-        ip = ip_address(ips)
-        cc = lookup(ip)
-        print(f"{ips} => {cc}")
+        cc, net = lookup(ips)
+        print(f"{ips} => {cc} {net}")
