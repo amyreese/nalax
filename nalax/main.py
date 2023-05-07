@@ -135,13 +135,7 @@ def report(ctx: click.Context) -> None:
             print(*row)
 
         result = conn.execute(
-            "select * from nalax_daily_regions order by count desc limit 20"
-        )
-        for row in result.fetchall():
-            print(*row)
-
-        result = conn.execute(
-            "select * from nalax_daily_devices order by count desc limit 20"
+            "select * from nalax_daily_users order by count desc limit 20"
         )
         for row in result.fetchall():
             print(*row)
