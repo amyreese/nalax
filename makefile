@@ -9,7 +9,7 @@ install:
 venv: .venv
 
 test:
-	python -m unittest -v nalax
+	python -m nalax.tests
 	python -m mypy -m nalax
 
 lint:
