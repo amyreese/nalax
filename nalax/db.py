@@ -1,3 +1,7 @@
+# Copyright Amethyst Reese
+# Licensed under the MIT license
+
+import logging
 import sqlite3 as sqlite
 from collections import defaultdict
 from pathlib import Path
@@ -7,6 +11,8 @@ from rich import print
 
 from .schema import SCHEMA, SCHEMA_INSERT, SCHEMA_SELECT
 from .types import Event
+
+LOG = logging.getLogger(__name__)
 
 
 def connect(location: Path) -> sqlite.Connection:
@@ -23,16 +29,17 @@ def update_schema(database: Path) -> int:
         latest = len(SCHEMA)
         while version < latest:
             now = arrow.utcnow().int_timestamp
-            print(version, SCHEMA[version])
+            LOG.debug("Upgrade DB SCHEMA[%d]:\n%s", version, SCHEMA[version])
             cursor.execute(SCHEMA[version])
-            print(SCHEMA_INSERT, version, now)
             cursor.execute(SCHEMA_INSERT, (version, now))
             conn.commit()
 
             # look for the *next* schema to apply
             result = cursor.execute(SCHEMA_SELECT)
             last_version, _timestamp = result.fetchone()
-            print(SCHEMA_SELECT, last_version, _timestamp)
+            LOG.debug(
+                "DB on schema version %d as of %s", last_version, arrow.get(_timestamp)
+            )
             version = last_version + 1
 
         conn.commit()
@@ -58,10 +65,8 @@ def insert_events(database: Path, batch: list[Event]) -> None:
         conn.commit()
 
 
-def aggregate_daily_events(
-    database: Path, threshold: int | None = None, purge: bool = True
-) -> None:
-    threshold = threshold or arrow.utcnow().floor("day").int_timestamp
+def aggregate_daily_events(database: Path, before: arrow.Arrow) -> int:
+    threshold = before.int_timestamp
 
     daily_pages: dict[tuple, int] = defaultdict(int)
     daily_regions: dict[tuple, int] = defaultdict(int)
@@ -75,9 +80,12 @@ def aggregate_daily_events(
         """
         params = (threshold,)
         result = cursor.execute(query, params)
+
+        event_count = 0
         while events := result.fetchmany():
             for event in events:
                 event: Event
+                event_count += 1
                 print(event)
                 t = event.timestamp
 
@@ -116,11 +124,12 @@ def aggregate_daily_events(
             params = (year, month, day, host, region, count)
             cursor.execute(query, params)
 
-        if purge:
-            query = """
-                delete from `nalax_events` where `timestamp` < ?
-            """
-            params = (threshold,)
-            cursor.execute(query, params)
+        # remove aggregated events
+        query = """
+            delete from `nalax_events` where `timestamp` < ?
+        """
+        params = (threshold,)
+        cursor.execute(query, params)
 
         conn.commit()
+        return event_count

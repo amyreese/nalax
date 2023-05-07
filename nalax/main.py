@@ -1,6 +1,8 @@
 # Copyright Amethyst Reese
 # Licensed under the MIT license
 
+import logging
+import sys
 from pathlib import Path
 
 import arrow
@@ -8,12 +10,14 @@ import click
 from rich import print
 
 from . import db, iplookup
+from .__version__ import __version__
 from .tail import tail
 from .types import Event, Options
 
 
 @click.group()
 @click.pass_context
+@click.version_option(__version__, "--version", "-V")
 @click.option(
     "--database",
     "-d",
@@ -24,6 +28,7 @@ def main(ctx: click.Context, database: Path) -> None:
     options = Options(
         database=database,
     )
+    logging.basicConfig(level=logging.WARNING, stream=sys.stderr)
     db.update_schema(options.database)
     iplookup.load()
     ctx.obj = options
@@ -54,13 +59,24 @@ def tail_logs(ctx: click.Context, log_path: Path, batch_size: int) -> None:
 
 @main.command("aggregate")
 @click.pass_context
-def aggregate(ctx: click.Context) -> None:
+@click.argument("before", type=str, required=False)
+def aggregate(ctx: click.Context, before: str | None) -> None:
     """
     Aggregate raw events into daily/weekly/monthly stats
     """
     options: Options = ctx.obj
 
-    db.aggregate_daily_events(options.database, arrow.utcnow().int_timestamp)
+    if before is None:
+        before = arrow.utcnow()
+    else:
+        try:
+            before = arrow.utcnow().dehumanize(before)
+        except ValueError:
+            before = arrow.get(before).to("utc")
+
+    print(f"Aggregating events before {before} ...")
+    event_count = db.aggregate_daily_events(options.database, before)
+    print(f"{event_count} events aggregated")
 
 
 @main.command("report")
